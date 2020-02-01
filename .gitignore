@@ -44,5 +44,6 @@ hs_err_pid*
 
 # Project
 
+cds/
 content/
 recommendations.json
