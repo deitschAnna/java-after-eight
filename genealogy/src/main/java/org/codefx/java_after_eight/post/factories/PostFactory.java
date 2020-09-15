@@ -8,6 +8,7 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toMap;
 
@@ -39,31 +40,22 @@ final class PostFactory {
 
 	public static RawPost readPost(List<String> fileLines) {
 		RawFrontMatter frontMatter = extractFrontMatter(fileLines);
-		Content content = () -> extractContent(fileLines).stream();
+		Content content = () -> extractContent(fileLines);
 		return new RawPost(frontMatter, content);
 	}
 
 	private static RawFrontMatter extractFrontMatter(List<String> fileLines) {
-		List<String> frontMatterLines = readFrontMatter(fileLines);
-		Map<String, String> frontMatter = frontMatterLines.stream()
+		Map<String, String> frontMatter = readFrontMatter(fileLines)
 				.map(PostFactory::keyValuePairFrom)
 				.collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
 		return new RawFrontMatter(frontMatter);
 	}
 
-	private static List<String> readFrontMatter(List<String> markdownFile) {
-		List<String> frontMatter = new ArrayList<>();
-		boolean frontMatterStarted = false;
-		for (String line : markdownFile) {
-			if (line.trim().equals(FRONT_MATTER_SEPARATOR)) {
-				if (frontMatterStarted)
-					return frontMatter;
-				else
-					frontMatterStarted = true;
-			} else if (frontMatterStarted)
-				frontMatter.add(line);
-		}
-		return frontMatter;
+	private static Stream<String> readFrontMatter(List<String> markdownFile) {
+		return markdownFile.stream()
+				.dropWhile(line -> !line.trim().equals(FRONT_MATTER_SEPARATOR))
+				.skip(1)
+				.takeWhile(line -> !line.trim().equals(FRONT_MATTER_SEPARATOR));
 	}
 
 	private static Map.Entry<String, String> keyValuePairFrom(String line) {
@@ -78,20 +70,12 @@ final class PostFactory {
 		return new AbstractMap.SimpleImmutableEntry<>(key, value);
 	}
 
-	private static List<String> extractContent(List<String> markdownFile) {
-		List<String> content = new ArrayList<>();
-		boolean frontMatterStarted = false;
-		boolean contentStarted = false;
-		for (String line : markdownFile) {
-			if (line.trim().equals(FRONT_MATTER_SEPARATOR)) {
-				if (frontMatterStarted)
-					contentStarted = true;
-				else
-					frontMatterStarted = true;
-			} else if (contentStarted)
-				content.add(line);
-		}
-		return content;
+	private static Stream<String> extractContent(List<String> markdownFile) {
+		return markdownFile.stream()
+				.dropWhile(line -> !line.trim().equals(FRONT_MATTER_SEPARATOR))
+				.skip(1)
+				.dropWhile(line -> !line.trim().equals(FRONT_MATTER_SEPARATOR))
+				.skip(1);
 	}
 
 }
