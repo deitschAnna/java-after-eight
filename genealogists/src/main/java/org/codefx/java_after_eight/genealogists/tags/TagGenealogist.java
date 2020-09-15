@@ -14,12 +14,12 @@ public class TagGenealogist implements Genealogist {
 
 	@Override
 	public TypedRelation infer(Post post1, Post post2) {
-		var post2Tags = post2.tags().collect(toUnmodifiableSet());
+		var post2Tags = post2.tags();
 		long numberOfSharedTags = post1
-				.tags()
+				.tags().stream()
 				.filter(post2Tags::contains)
 				.count();
-		long numberOfPost1Tags = post1.tags().count();
+		long numberOfPost1Tags = post1.tags().size();
 		long score = round((100.0 * 2 * numberOfSharedTags) / (numberOfPost1Tags + post2Tags.size()));
 		return TypedRelation.from(post1, post2, TYPE, score);
 	}

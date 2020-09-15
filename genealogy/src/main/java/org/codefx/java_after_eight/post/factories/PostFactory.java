@@ -4,7 +4,6 @@ import org.codefx.java_after_eight.Utils;
 import org.codefx.java_after_eight.post.Content;
 
 import java.nio.file.Path;
-import java.util.AbstractMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -47,7 +46,7 @@ final class PostFactory {
 	private static RawFrontMatter extractFrontMatter(List<String> fileLines) {
 		Map<String, String> frontMatter = readFrontMatter(fileLines)
 				.map(PostFactory::keyValuePairFrom)
-				.collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
+				.collect(toMap(FrontMatterLine::key, FrontMatterLine::value));
 		return new RawFrontMatter(frontMatter);
 	}
 
@@ -59,7 +58,7 @@ final class PostFactory {
 				.takeWhile(not(FRONT_MATTER_SEPARATOR::equals));
 	}
 
-	private static Map.Entry<String, String> keyValuePairFrom(String line) {
+	private static FrontMatterLine keyValuePairFrom(String line) {
 		String[] pair = line.split(":", 2);
 		if (pair.length < 2)
 			throw new IllegalArgumentException("Line doesn't seem to be a key/value pair (no colon): " + line);
@@ -68,7 +67,7 @@ final class PostFactory {
 			throw new IllegalArgumentException("Line \"" + line + "\" has no key.");
 
 		String value = pair[1].strip();
-		return new AbstractMap.SimpleImmutableEntry<>(key, value);
+		return new FrontMatterLine(key, value);
 	}
 
 	private static Stream<String> extractContent(List<String> markdownFile) {
@@ -78,5 +77,7 @@ final class PostFactory {
 				.dropWhile(line -> !line.strip().equals(FRONT_MATTER_SEPARATOR))
 				.skip(1);
 	}
+
+	private record FrontMatterLine(String key, String value) { }
 
 }
