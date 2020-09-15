@@ -14,7 +14,7 @@ public class Repository {
 
 	public static Repository from(String identifier) {
 		requireNonNull(identifier);
-		if (identifier.isEmpty())
+		if (identifier.isBlank())
 			throw new IllegalArgumentException("Repositories can't have an empty identifier.");
 		return new Repository(identifier);
 	}

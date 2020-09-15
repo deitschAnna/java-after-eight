@@ -14,7 +14,7 @@ public class VideoSlug implements Comparable<VideoSlug> {
 
 	public static VideoSlug from(String value) {
 		requireNonNull(value);
-		if (value.isEmpty())
+		if (value.isBlank())
 			throw new IllegalArgumentException("Slugs can't have an empty value.");
 		return new VideoSlug(value);
 	}
