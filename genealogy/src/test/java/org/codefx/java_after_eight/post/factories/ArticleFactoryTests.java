@@ -14,7 +14,7 @@ class ArticleFactoryTests {
 
 	@Test
 	void createFromFrontMatter_multipleColons_getValidArticle() {
-		List<String> file = List.of(
+		var file = List.of(
 				"---",
 				"title: Cool: A blog post",
 				"tags: [$TAG, $TOG]",
@@ -25,7 +25,7 @@ class ArticleFactoryTests {
 				""
 		);
 
-		Post post = ArticleFactory.createArticle(file);
+		var post = ArticleFactory.createArticle(file);
 
 		assertThat(post.title().text()).isEqualTo("Cool: A blog post");
 		assertThat(post.tags()).extracting(Tag::text).containsExactlyInAnyOrder("$TAG", "$TOG");
@@ -36,7 +36,7 @@ class ArticleFactoryTests {
 
 	@Test
 	void createFromFrontMatter_allTagsCorrect_getValidArticle() {
-		List<String> file = List.of(
+		var file = List.of(
 				"---",
 				"title: A cool blog post",
 				"tags: [$TAG, $TOG]",
@@ -47,7 +47,7 @@ class ArticleFactoryTests {
 				""
 		);
 
-		Post article = ArticleFactory.createArticle(file);
+		var article = ArticleFactory.createArticle(file);
 
 		assertThat(article.title().text()).isEqualTo("A cool blog post");
 		assertThat(article.tags()).extracting(Tag::text).containsExactlyInAnyOrder("$TAG", "$TOG");
@@ -58,7 +58,7 @@ class ArticleFactoryTests {
 
 	@Test
 	void createFromFile_allTagsCorrect_getValidArticle() {
-		List<String> file = List.of(
+		var file = List.of(
 				"---",
 				"title: A cool blog post",
 				"tags: [$TAG, $TOG]",
@@ -72,7 +72,7 @@ class ArticleFactoryTests {
 				"Duis aute irure dolor in reprehenderit.",
 				"Excepteur sint occaecat cupidatat non proident.");
 
-		Article article = ArticleFactory.createArticle(file);
+		var article = ArticleFactory.createArticle(file);
 
 		assertThat(article.title().text()).isEqualTo("A cool blog post");
 		assertThat(article.tags()).extracting(Tag::text).containsExactlyInAnyOrder("$TAG", "$TOG");
